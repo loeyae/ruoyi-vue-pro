@@ -9,7 +9,7 @@ import cn.iocoder.yudao.module.pay.api.order.dto.PayOrderRespDTO;
 import cn.iocoder.yudao.module.pay.api.refund.PayRefundApi;
 import cn.iocoder.yudao.module.pay.api.refund.dto.PayRefundCreateReqDTO;
 import cn.iocoder.yudao.module.pay.api.refund.dto.PayRefundRespDTO;
-import cn.iocoder.yudao.module.pay.controller.admin.demo.vo.PayDemoOrderCreateReqVO;
+import cn.iocoder.yudao.module.pay.controller.admin.demo.vo.order.PayDemoOrderCreateReqVO;
 import cn.iocoder.yudao.module.pay.dal.dataobject.demo.PayDemoOrderDO;
 import cn.iocoder.yudao.module.pay.dal.mysql.demo.PayDemoOrderMapper;
 import cn.iocoder.yudao.module.pay.enums.order.PayOrderStatusEnum;
@@ -25,7 +25,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
-import static cn.hutool.core.util.ObjectUtil.*;
+import static cn.hutool.core.util.ObjectUtil.notEqual;
 import static cn.iocoder.yudao.framework.common.exception.util.ServiceExceptionUtil.exception;
 import static cn.iocoder.yudao.framework.common.util.date.LocalDateTimeUtils.addTime;
 import static cn.iocoder.yudao.framework.common.util.json.JsonUtils.toJsonString;
@@ -156,7 +156,7 @@ public class PayDemoOrderServiceImpl implements PayDemoOrderService {
         PayOrderRespDTO payOrder = payOrderApi.getOrder(payOrderId);
         if (payOrder == null) {
             log.error("[validateDemoOrderCanPaid][order({}) payOrder({}) 不存在，请进行处理！]", id, payOrderId);
-            throw exception(ORDER_NOT_FOUND);
+            throw exception(PAY_ORDER_NOT_FOUND);
         }
         // 2.2 校验支付单已支付
         if (!PayOrderStatusEnum.isSuccess(payOrder.getStatus())) {
@@ -232,7 +232,7 @@ public class PayDemoOrderServiceImpl implements PayDemoOrderService {
             throw exception(DEMO_ORDER_NOT_FOUND);
         }
         // 1.2 校验退款订单匹配
-        if (Objects.equals(order.getPayOrderId(), payRefundId)) {
+        if (Objects.equals(order.getPayRefundId(), payRefundId)) {
             log.error("[validateDemoOrderCanRefunded][order({}) 退款单不匹配({})，请进行处理！order 数据是：{}]",
                     id, payRefundId, toJsonString(order));
             throw exception(DEMO_ORDER_REFUND_FAIL_REFUND_ORDER_ID_ERROR);
